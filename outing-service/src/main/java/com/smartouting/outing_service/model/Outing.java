@@ -2,11 +2,13 @@ package com.smartouting.outing_service.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Data
+@Setter
 public class Outing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +31,7 @@ public class Outing {
     private String qrCodeUrl;
 
 
+    public void setWardenComment(String wardenComment) {
+        this.wardernComment=wardenComment;
+    }
 }

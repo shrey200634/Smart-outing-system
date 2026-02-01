@@ -11,14 +11,21 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
+        # Route 1: Identity
         - id: identity-service
           uri: lb://IDENTITY-SERVICE
           predicates:
             - Path=/auth/**
 
+        # Route 2: Outing (MUST ALIGN WITH ROUTE 1)
+        - id: outing-service
+          uri: lb://OUTING-SERVICE
+          predicates:
+            - Path=/outing/**
+
 eureka:
   instance:
-    prefer-ip-address: true  # <--- This was likely the problem area before
+    prefer-ip-address: true
   client:
     register-with-eureka: true
     fetch-registry: true
