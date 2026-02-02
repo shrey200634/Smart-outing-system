@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class OutingService {
@@ -66,7 +67,7 @@ public class OutingService {
             outing.setOutDate(LocalDateTime.now());
             return mapToResponse(outingRepository.save(outing));
         } else {
-            throw new RuntimeException("Student is NOT approved to leave!");
+            throw new ResourseNotFoundException("Student is NOT approved to leave!");
         }
     }
 
@@ -101,4 +102,15 @@ public class OutingService {
             outing.setUrgencyScore(10);
         }
     }
+    // get all outing for wardern
+    public List<Outing> getAllOuting(){
+        return outingRepository.findAll();
+
+    }
+   // get single outing by id
+    public Outing getOutingById(Long  id){
+        return outingRepository.findById(id)
+                .orElseThrow(()->new ResourseNotFoundException("outing not found with id :" +id));
+    }
+
 }
