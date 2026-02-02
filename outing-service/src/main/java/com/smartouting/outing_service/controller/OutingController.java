@@ -5,6 +5,7 @@ import com.smartouting.outing_service.dto.OutingResponseDTO;
 import com.smartouting.outing_service.service.OutingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,21 +15,18 @@ public class OutingController {
     @Autowired
     private OutingService service;
 
-    // 1. Apply (DTO version)
     @PostMapping("/apply")
-    public OutingResponseDTO apply(@RequestBody @Valid OutingRequestDTO request) {
-        return service.applyForOuting(request);
+    public ResponseEntity<OutingResponseDTO> apply(@RequestBody @Valid OutingRequestDTO request) {
+        return ResponseEntity.ok(service.applyForOuting(request));
     }
 
-    // 2. Approve
     @PutMapping("/approve/{id}")
-    public OutingResponseDTO approve(@PathVariable Long id, @RequestParam String comment) throws Exception {
-        return service.approveOuting(id, comment);
+    public ResponseEntity<OutingResponseDTO> approve(@PathVariable Long id, @RequestParam String comment) throws Exception {
+        return ResponseEntity.ok(service.approveOuting(id, comment));
     }
 
-    // 3. Scan
     @PutMapping("/scan/{id}")
-    public OutingResponseDTO scanQr(@PathVariable Long id) {
-        return service.verifyAndMarkOut(id);
+    public ResponseEntity<OutingResponseDTO> scan(@PathVariable Long id) {
+        return ResponseEntity.ok(service.verifyAndMarkOut(id));
     }
 }

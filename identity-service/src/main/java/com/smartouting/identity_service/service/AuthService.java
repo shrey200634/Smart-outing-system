@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
+
     @Autowired
     private UserCredentialRepository repository;
 
@@ -17,19 +18,30 @@ public class AuthService {
     @Autowired
     private JwtService jwtService;
 
-//register
-    public String saveUser(UserCredential userCredential){
-        userCredential.setPassword(passwordEncoder.encode(userCredential.getPassword()));
-        repository.save(userCredential);
-        return "User added to the System";
-    }
-    // login ;generate a token for varified user
-    public String generateToken(String username ){
-        return jwtService.generateToken(username);
+    // 1. REGISTER: Encrypt password before saving
+    public String saveUser(UserCredential credential) {
+        // Hash the password (e.g., "pass123" -> "$2a$10$...")
+        credential.setPassword(passwordEncoder.encode(credential.getPassword()));
+        repository.save(credential);
+        return "User added successfully";
     }
 
-    // check if the token is valid
-    public  void validateToken(String token){
+    // 2. LOGIN: Verify password and Generate Token
+    public String generateToken(String username, String rawPassword) {
+        // Find the user
+        UserCredential user = repository.findByName(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        // Check if password matches
+        if (passwordEncoder.matches(rawPassword, user.getPassword())) {
+            return jwtService.generateToken(username);
+        } else {
+            throw new RuntimeException("Invalid Access: Wrong Password");
+        }
+    }
+
+    // 3. VALIDATE
+    public void validateToken(String token) {
         jwtService.validateToken(token);
     }
 }

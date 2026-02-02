@@ -12,22 +12,34 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    // Handle Validation Errors (e.g. Past dates, empty names)
+
+    // 1. Handle Validation Errors (e.g. Empty Name, Past Date)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(err ->
-                errors.put(err.getField(), err.getDefaultMessage()));
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage())
+        );
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    // Handle "Outing Not Found" errors
+    // 2. Handle Resource Not Found (e.g. Wrong ID)
     @ExceptionHandler(ResourseNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(ResourseNotFoundException ex) {
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourseNotFoundException ex) {
         Map<String, Object> error = new HashMap<>();
         error.put("timestamp", LocalDateTime.now());
         error.put("message", ex.getMessage());
         error.put("status", HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    // 3. Handle Generic Errors
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGeneralErrors(Exception ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("timestamp", LocalDateTime.now());
+        error.put("message", "An unexpected error occurred: " + ex.getMessage());
+        error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -12,31 +12,29 @@ import java.time.LocalDateTime;
 public class Outing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id ;
+    private Long id;
+
     private String studentId;
     private String studentName;
+    private String reason;
+    private String destination;
 
-    private String reason ;
-    private String destination ;
+    private LocalDateTime outDate;
+    private LocalDateTime returnDate;
 
-    private LocalDateTime outDate ;   // when they want to go
-    private LocalDateTime returnDate;  // when they will come back
+    private String status = "PENDING";
 
-    private String status ="PENDING";
+    // FIXED: Renamed 'wardernComment' to 'wardenComment'
+    private String wardenComment;
 
-    private String wardernComment ; // if reject why ?
-
+    // AI Fields
     private String aiFlag;
     private int urgencyScore;
 
-    // QR code (only generate after approval
-    @Column(length=1000)
+    @Column(length = 1000)
     private String qrCodeUrl;
 
 
-    public void setWardenComment(String wardenComment) {
-        this.wardernComment=wardenComment;
-    }
 
 
 }
