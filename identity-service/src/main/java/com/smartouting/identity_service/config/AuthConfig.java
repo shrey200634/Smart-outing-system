@@ -29,13 +29,13 @@ public class AuthConfig {
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception {
-         return httpSecurity
-                 .csrf(AbstractHttpConfigurer::disable)// attack which we disable
-                 .authorizeHttpRequests(auth -> auth
-                         .requestMatchers("/auth/register", "/auth/token", "/auth/validate").permitAll()
-                         .anyRequest().authenticated()
-                 )
-                 .build();
+        return httpSecurity
+                .csrf(AbstractHttpConfigurer::disable)// attack which we disable
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/register", "/auth/token", "/auth/validate").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .build();
     }
 
     @Bean
@@ -57,6 +57,4 @@ public class AuthConfig {
     }
 
 
-    }
-
-
+}

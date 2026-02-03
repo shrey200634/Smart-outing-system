@@ -18,10 +18,13 @@ public class OutingService {
     @Autowired
     private OutingRepository outingRepository;
 
+    @Autowired
+    private AIService aiService;
+
     // 1. APPLY (Student sends RequestDTO, we return ResponseDTO)
     public OutingResponseDTO applyForOuting(OutingRequestDTO request) {
 
-        // Convert DTO to Entity
+        // A. Convert DTO to Entity
         Outing outing = new Outing();
         outing.setStudentId(request.getStudentId());
         outing.setStudentName(request.getStudentName());
@@ -31,13 +34,21 @@ public class OutingService {
         outing.setReturnDate(request.getReturnDate());
         outing.setStatus("PENDING");
 
-        // Simple AI Logic (We will upgrade this on Day 2)
-        analyzeRequest(outing);
+        // B. 🧠 CALL THE NEW AI BRAIN
+        // We send the "Reason" to the AI, and get back a full Analysis Result
+        com.smartouting.outing_service.dto.AIAnalysisResult aiResult = aiService.analyzeRequest(request.getReason());
 
-        // Save to DB
+        // C. Map AI Results to Database Entity
+        outing.setAiFlag(aiResult.getCategory());       // e.g., "MEDICAL_EMERGENCY"
+        outing.setUrgencyScore(aiResult.getUrgencyScore()); // e.g., 95
+
+        // Optional: You can save the explanation if you add a field for it later
+        // outing.setAiExplanation(aiResult.getExplanation());
+
+        // D. Save to DB
         Outing savedOuting = outingRepository.save(outing);
 
-        // Convert back to DTO
+        // E. Convert back to DTO
         return mapToResponse(savedOuting);
     }
 
@@ -91,17 +102,7 @@ public class OutingService {
         );
     }
 
-    // Basic AI Analysis
-    private void analyzeRequest(Outing outing) {
-        String r = outing.getReason().toLowerCase();
-        if (r.contains("doctor") || r.contains("hospital")) {
-            outing.setAiFlag("⚠️ MEDICAL");
-            outing.setUrgencyScore(98);
-        } else {
-            outing.setAiFlag("ℹ️ GENERAL");
-            outing.setUrgencyScore(10);
-        }
-    }
+
     // get all outing for wardern
     public List<Outing> getAllOuting(){
         return outingRepository.findAll();
