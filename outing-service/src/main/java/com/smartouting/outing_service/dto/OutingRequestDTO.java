@@ -1,5 +1,6 @@
 package com.smartouting.outing_service.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,4 +34,8 @@ public class OutingRequestDTO {
     @NotNull(message = "Return date is required")
     @Future(message = "Return date must be in the future")
     private LocalDateTime returnDate;
+
+    @NotBlank(message = "Parent Email is required")
+    @Email(message = "Invalid email format")
+    private String parentEmail;
 }

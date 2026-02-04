@@ -46,4 +46,11 @@ public class OutingController {
     public void triggerCrash() {
         throw new RuntimeException("This is an unexpected system crash!");
     }
+
+    // Get ALL requests for a specific student (For their Dashboard)
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<List<Outing>> getStudentHistory(@PathVariable String studentId) {
+        return ResponseEntity.ok(service.getOutingsByStudentId(studentId));
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.smartouting.outing_service.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 import lombok.Setter;
 
@@ -16,6 +17,12 @@ public class Outing {
 
     private String studentId;
     private String studentName;
+
+    // private String parentEmail;
+
+    @Column(name = "parent_email")
+    private String parentEmail;
+
     private String reason;
     private String destination;
 

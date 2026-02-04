@@ -21,6 +21,9 @@ public class OutingService {
     @Autowired
     private AIService aiService;
 
+    @Autowired
+    private EmailService emailService;
+
     // 1. APPLY (Student sends RequestDTO, we return ResponseDTO)
     public OutingResponseDTO applyForOuting(OutingRequestDTO request) {
 
@@ -28,6 +31,7 @@ public class OutingService {
         Outing outing = new Outing();
         outing.setStudentId(request.getStudentId());
         outing.setStudentName(request.getStudentName());
+        outing.setParentEmail(request.getParentEmail());
         outing.setReason(request.getReason());
         outing.setDestination(request.getDestination());
         outing.setOutDate(request.getOutDate());
@@ -76,6 +80,12 @@ public class OutingService {
         if ("APPROVED".equals(outing.getStatus())) {
             outing.setStatus("OUT");
             outing.setOutDate(LocalDateTime.now());
+
+            emailService.sendOutingAlert(
+                    outing.getParentEmail(),
+                    outing.getStudentName(),
+                    outing.getReason()
+            );
             return mapToResponse(outingRepository.save(outing));
         } else {
             throw new ResourseNotFoundException("Student is NOT approved to leave!");
@@ -112,6 +122,17 @@ public class OutingService {
     public Outing getOutingById(Long  id){
         return outingRepository.findById(id)
                 .orElseThrow(()->new ResourseNotFoundException("outing not found with id :" +id));
+    }
+
+
+    // Phase 2: Get ALL requests for a specific student
+    public List<Outing> getOutingsByStudentId(String studentId) {
+        List<Outing> history = outingRepository.findByStudentId(studentId);
+        if(history.isEmpty()) {
+            System.out.println("No history found for student: " + studentId);
+        }
+
+        return history;
     }
 
 }
